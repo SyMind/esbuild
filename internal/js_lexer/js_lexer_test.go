@@ -12,8 +12,10 @@ import (
 )
 
 func assertEqualStrings(t *testing.T, a string, b string) {
+	// Helper 将调用函数标记为测试助手函数。当打印文件和行信息时，该函数将被跳过。
 	t.Helper()
 	pretty := func(text string) string {
+		// Golang 在 1.10 引入 strings.Builder，以前使用 bytes.Buffer 来优化字符串拼接操作
 		builder := strings.Builder{}
 		builder.WriteRune('"')
 		i := 0
@@ -38,6 +40,7 @@ func lexToken(t *testing.T, contents string) T {
 
 func expectLexerError(t *testing.T, contents string, expected string) {
 	t.Helper()
+	// 允许使用 T 和 B 的 Run 方法定义子单元测试或子基准测试，而不必为每一个定义单独的函数。
 	t.Run(contents, func(t *testing.T) {
 		t.Helper()
 		log := logger.NewDeferLog()
@@ -521,6 +524,7 @@ func TestTokens(t *testing.T) {
 	}{
 		{"", TEndOfFile},
 		{"\x00", TSyntaxError},
+		{"...", TDotDotDot},
 
 		// "#!/usr/bin/env node"
 		{"#!", THashbang},

@@ -223,7 +223,7 @@ type Lexer struct {
 	end                             int
 	ApproximateNewlineCount         int
 	LegacyOctalLoc                  logger.Loc
-	Token                           T
+	Token                           T // 当前的符号
 	HasNewlineBefore                bool
 	HasPureCommentBefore            bool
 	PreserveAllCommentsBefore       bool
@@ -983,7 +983,7 @@ func (lexer *Lexer) Next() {
 
 	for {
 		lexer.start = lexer.end
-		lexer.Token = 0
+		lexer.Token = 0 // 0 不就是 TEndOfFile 么？
 
 		switch lexer.codePoint {
 		case -1: // This indicates the end of the file
@@ -997,6 +997,9 @@ func (lexer *Lexer) Next() {
 				for {
 					lexer.step()
 					switch lexer.codePoint {
+					// \u2028 LINE SEPARATOR
+					// \u2029 PARAGRAPH SEPARATOR
+					// \u0085 NEXT LINE - 是不是少判断了这个 - ECMA262 将该字符视为空白符
 					case '\r', '\n', '\u2028', '\u2029':
 						break hashbang
 
@@ -2370,6 +2373,9 @@ func (lexer *Lexer) RescanCloseBraceAsTemplateToken() {
 }
 
 func (lexer *Lexer) step() {
+	// DecodeRune 在解压缩字符串中的第一个 UTF-8 编码字符，并返回字符及其宽度（以字节为单位）。
+	// 如果字符串为空，则返回（RuneError，0）。 否则，如果编码无效，则返回（RuneError，1）。
+	// 对于正确的非空 UTF-8，这都是不可能的结果。
 	codePoint, width := utf8.DecodeRuneInString(lexer.source.Contents[lexer.current:])
 
 	// Use -1 to indicate the end of the file

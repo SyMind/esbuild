@@ -31,6 +31,14 @@ import (
 // the number of full-tree passes to improve performance. However, we need
 // to have at least two separate passes to handle variable hoisting. See the
 // comment about scopesInOrder below for more information.
+
+// 解析器执行两个过程：
+//
+// 1. 将源代码解析为 AST，创建作用域树，并声明符号。
+// 2. 访问 AST 中的每个节点，将标识符绑定到声明的符号，执行常量折叠，替换编译时变量定义，并根据语言目标适当降低某些语法结构。
+//
+// 在这么少的过程中放了这么多东西，因为我们希望最小化完整树过程的数量以提高性能。
+// 然而，我们需要至少有两个单独的过程来处理变量提升。有关详细信息，请参阅下面 scopesInOrder 的注释。
 type parser struct {
 	options                  Options
 	log                      logger.Log
