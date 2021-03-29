@@ -217,6 +217,12 @@ type Source struct {
 	// referencing a file in all output data. These paths still use the original
 	// case of the path so they may still work differently on file systems that
 	// are case-insensitive vs. case-sensitive.
+
+	// 这用于错误消息和元数据 JSON 文件。
+	//
+	// 这是一个几乎与平台无关的路径。它相对于当前工作目录，并且始终使用标准路径分隔符。
+	// 用于在所有输出数据中引用文件。这些路径仍然使用路径的原始大小写，
+	// 因此它们在不区分大小写和区分大小写的文件系统上的工作方式可能仍然不同。
 	PrettyPath string
 
 	// An identifier that is mixed in to automatically-generated symbol names to
