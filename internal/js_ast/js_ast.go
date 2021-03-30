@@ -313,13 +313,13 @@ type Fn struct {
 	Name         *LocRef
 	OpenParenLoc logger.Loc
 	Args         []Arg
-	Body         FnBody
-	ArgumentsRef Ref
+	Body         FnBody // ECMA262 中为 BlockStatement
+	ArgumentsRef Ref    // 这个是干什么用的？
 
 	IsAsync     bool
 	IsGenerator bool
 	HasRestArg  bool
-	HasIfScope  bool
+	HasIfScope  bool // 为什要有这个对于 If 作用域的判断？for、swich 等是如何对待的？
 
 	// This is true if the function is a method
 	IsUniqueFormalParameters bool
@@ -920,6 +920,8 @@ type Stmt struct {
 
 // This interface is never called. Its purpose is to encode a variant type in
 // Go's type system.
+// 这个接口中定义的 isStmt() 方法永远不会被调用，它的目的是为了标识是否是 Stmt 类型。
+// 这里的写法与 typescript 中的 service brand 的写法甚是相似，目的也相差不多
 type S interface{ isStmt() }
 
 type SBlock struct {
@@ -1015,6 +1017,7 @@ type SNamespace struct {
 	IsExport bool
 }
 
+// 这个是 Function 语句的定义
 type SFunction struct {
 	Fn       Fn
 	IsExport bool

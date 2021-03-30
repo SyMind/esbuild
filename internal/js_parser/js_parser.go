@@ -4918,6 +4918,7 @@ func (p *parser) parsePath() (logger.Loc, string) {
 }
 
 // This assumes the "function" token has already been parsed
+// 这里的 fnStmt 指的是 FunctionDeclaration 语句
 func (p *parser) parseFnStmt(loc logger.Loc, opts parseStmtOpts, isAsync bool, asyncRange logger.Range) js_ast.Stmt {
 	isGenerator := p.lexer.Token == js_lexer.TAsterisk
 	if isGenerator {
@@ -4955,6 +4956,7 @@ func (p *parser) parseFnStmt(loc logger.Loc, opts parseStmtOpts, isAsync bool, a
 	}
 
 	// Introduce a fake block scope for function declarations inside if statements
+	// 为在 if 语句中的函数声明引入伪造的块作用域 —— 这里没有太明白，是以前对 if 语句中的函数声明处理的有问题么？
 	var ifStmtScopeIndex int
 	hasIfScope := opts.lexicalDecl == lexicalDeclAllowFnInsideIf
 	if hasIfScope {
@@ -5041,7 +5043,7 @@ func (p *parser) parseStmt(opts parseStmtOpts) js_ast.Stmt {
 	loc := p.lexer.Loc()
 
 	switch p.lexer.Token {
-	case js_lexer.TSemicolon:
+	case js_lexer.TSemicolon: // 只有分号为空语句，https://262.ecma-international.org/11.0/#sec-expression-statement
 		p.lexer.Next()
 		return js_ast.Stmt{Loc: loc, Data: &js_ast.SEmpty{}}
 
